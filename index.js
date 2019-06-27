@@ -3,8 +3,16 @@ const server = express();
 server.use(express.json());
 
 const projects = [];
+let contador = 0;
 
 server.listen("3000");
+
+//middleware global
+server.use((req, res, next) => {
+  contador += 1;
+  console.log(`Requisições feitas: ${contador}`);
+  return next();
+});
 
 //middleware que valida parametro {id}
 function checkProjectId(req, res, next) {
