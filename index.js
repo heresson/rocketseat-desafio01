@@ -6,6 +6,16 @@ const projects = [];
 
 server.listen("3000");
 
+//middleware que valida parametro {id}
+function checkProjectId(req, res, next) {
+  const { id } = req.params;
+  const project = projects.find(p => p.id === id);
+  if (!project) {
+    return res.status(400).json({ error: "Project Id Invalid" });
+  }
+  return next();
+}
+
 //listar projetos
 server.get("/projects", (req, res) => {
   return res.json(projects);
@@ -24,7 +34,7 @@ server.post("/projects", (req, res) => {
 });
 
 //editar titulo do projeto
-server.put("/projects/:id", (req, res) => {
+server.put("/projects/:id", checkProjectId, (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
   const project = projects.find(p => p.id === id);
@@ -33,7 +43,7 @@ server.put("/projects/:id", (req, res) => {
 });
 
 //deletar projeto
-server.delete("/projects/:id", (req, res) => {
+server.delete("/projects/:id", checkProjectId, (req, res) => {
   const { id } = req.params;
   const projectIndex = projects.findIndex(p => p.id === id);
   projects.splice(projectIndex, 1);
@@ -41,7 +51,7 @@ server.delete("/projects/:id", (req, res) => {
 });
 
 //incluir tarefa em um projeto
-server.post("/projects/:id/tasks", (req, res) => {
+server.post("/projects/:id/tasks", checkProjectId, (req, res) => {
   const { id } = req.params;
   const { taskTitle } = req.body;
 
